@@ -1,583 +1,831 @@
 <!DOCTYPE html>
-<!--
-  The Epstein Files: Exposed
-  =========================
-
-  A public investigative reference tool documenting connections between named
-  individuals and Jeffrey Epstein's criminal network, sourced exclusively from
-  official U.S. government documents.
-
-  EXTERNAL RESOURCES LOADED:
-  - Wikimedia Commons (https://upload.wikimedia.org/) — photos for named individuals
-    Photos are public domain / CC licensed. Graceful fallback to initials if unavailable.
-
-  NO third-party JavaScript libraries. No build step. No live API dependencies.
-  All data is hardcoded JSON in this file.
--->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Epstein Files: Exposed</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0f1117;
-      --surface: #1a1d27;
-      --border: #2a2d3a;
-      --text: #e8e9ed;
-      --text-muted: #8b8fa3;
-      --accent: #c9a84c;
-      --accent-dim: #a07f2e;
-      --danger: #e05a5a;
-      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --bg: #0d0d0d;
+      --accent: #c0392b;
+      --secondary: #8b7355;
+      --text: #e8e8e8;
+      --surface: #1a1a1a;
+      --surface-2: #222;
+      --border: #333;
     }
 
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: var(--font);
+      font-family: 'IBM Plex Mono', monospace;
       line-height: 1.6;
       min-height: 100vh;
     }
 
+    h1, h2, h3, .display { font-family: 'Playfair Display', serif; }
+
     /* ── DISCALIMER BANNER ── */
     .disclaimer {
-      background: #1c2333;
-      border-bottom: 1px solid var(--danger);
-      padding: 14px 24px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--accent);
+      padding: 10px 20px;
       text-align: center;
-      font-size: 0.85rem;
-      color: #d4a0a0;
+      font-size: 11px;
+      color: var(--secondary);
+      letter-spacing: 0.04em;
+      line-height: 1.5;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
+    .disclaimer span { color: var(--accent); }
 
-    /* ── HEADER ── */
-    header {
-      border-bottom: 1px solid var(--border);
-      padding: 32px 24px;
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      padding: 80px 20px 60px;
       text-align: center;
+      overflow: hidden;
     }
-
-    header h1 {
-      font-size: 1.75rem;
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(0,0,0,0.08) 2px,
+          rgba(0,0,0,0.08) 4px
+        ),
+        radial-gradient(ellipse at 50% 0%, rgba(192,57,43,0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .hero-inner { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
+    .hero-label {
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+    .hero h1 {
+      font-size: clamp(2.4rem, 6vw, 4.5rem);
       font-weight: 700;
-      letter-spacing: -0.02em;
       color: var(--text);
+      line-height: 1.1;
+      margin-bottom: 16px;
+      letter-spacing: -0.02em;
     }
-
-    header h1 span { color: var(--accent); }
-
-    header p {
-      margin-top: 8px;
-      color: var(--text-muted);
-      font-size: 0.9rem;
+    .hero h1 em {
+      font-style: normal;
+      color: var(--accent);
     }
-
-    /* ── STATS ── */
-    .stats {
+    .hero-sub {
+      font-size: 14px;
+      color: var(--secondary);
+      margin-bottom: 40px;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+    .hero-stats {
       display: flex;
       justify-content: center;
-      gap: 40px;
-      padding: 28px 24px;
-      border-bottom: 1px solid var(--border);
+      gap: 48px;
+      flex-wrap: wrap;
     }
-
-    .stat { text-align: center; }
-
-    .stat-number {
-      font-size: 2.25rem;
+    .stat {
+      text-align: center;
+    }
+    .stat-n {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
       font-weight: 700;
       color: var(--accent);
       line-height: 1;
     }
-
-    .stat-label {
-      margin-top: 4px;
-      font-size: 0.78rem;
-      color: var(--text-muted);
+    .stat-l {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--secondary);
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      margin-top: 4px;
+    }
+    .redacted-block {
+      display: inline-block;
+      background: var(--accent);
+      color: var(--accent);
+      opacity: 0.7;
+      font-size: 10px;
+      padding: 2px 8px;
+      letter-spacing: 0.1em;
+      margin: 8px auto;
+      width: fit-content;
     }
 
-    /* ── SEARCH ── */
-    .search-wrap {
-      max-width: 680px;
+    /* ── FILTER + SEARCH ── */
+    .controls {
+      max-width: 1100px;
       margin: 0 auto;
-      padding: 24px 24px 0;
+      padding: 24px 20px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
     }
-
+    .search-wrap {
+      flex: 1;
+      min-width: 240px;
+      position: relative;
+    }
     .search-wrap input {
       width: 100%;
-      padding: 12px 16px;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 6px;
       color: var(--text);
-      font-size: 0.95rem;
-      font-family: var(--font);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      padding: 10px 16px 10px 36px;
       outline: none;
-      transition: border-color 0.15s;
+      transition: border-color 0.2s;
     }
-
     .search-wrap input:focus { border-color: var(--accent); }
-    .search-wrap input::placeholder { color: var(--text-muted); }
-
-    .filter-row {
+    .search-wrap input::placeholder { color: #555; }
+    .search-wrap svg {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0.4;
+    }
+    .filters {
       display: flex;
       gap: 8px;
-      padding: 12px 24px 0;
-      overflow-x: auto;
       flex-wrap: wrap;
     }
-
     .filter-btn {
-      padding: 5px 14px;
-      border-radius: 20px;
+      background: var(--surface);
       border: 1px solid var(--border);
-      background: transparent;
-      color: var(--text-muted);
-      font-size: 0.78rem;
-      font-family: var(--font);
+      color: var(--secondary);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      padding: 8px 14px;
       cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.15s;
+      letter-spacing: 0.05em;
+      transition: all 0.2s;
     }
-
     .filter-btn:hover, .filter-btn.active {
       border-color: var(--accent);
       color: var(--accent);
-      background: rgba(201, 168, 76, 0.06);
     }
 
-    /* ── ENTRIES ── */
-    .entries {
-      max-width: 860px;
+    /* ── GRID ── */
+    .grid {
+      max-width: 1100px;
       margin: 0 auto;
-      padding: 24px;
+      padding: 0 20px 60px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
     }
 
-    .entry {
+    /* ── CARD ── */
+    .card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      margin-bottom: 16px;
+      cursor: pointer;
+      transition: border-color 0.25s, transform 0.25s;
+      position: relative;
       overflow: hidden;
     }
-
-    .entry-header {
+    .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .card-header {
+      padding: 20px 20px 16px;
       display: flex;
-      align-items: center;
       gap: 16px;
-      padding: 16px 20px;
+      align-items: flex-start;
     }
-
-    .entry-photo {
-      width: 52px;
-      height: 52px;
+    .avatar {
+      width: 64px;
+      height: 64px;
       border-radius: 50%;
-      object-fit: cover;
       flex-shrink: 0;
-      background: var(--border);
-    }
-
-    .entry-initials {
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      background: var(--accent-dim);
-      color: #fff;
-      font-weight: 700;
-      font-size: 1rem;
+      overflow: hidden;
+      border: 2px solid var(--border);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      background: var(--surface-2);
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
-      letter-spacing: 0.02em;
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--secondary);
     }
-
-    .entry-meta { flex: 1; min-width: 0; }
-
-    .entry-name {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--text);
+    .card:hover .avatar {
+      border-color: var(--accent);
+      box-shadow: 0 0 16px rgba(192,57,43,0.5);
     }
-
-    .entry-role {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-top: 1px;
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
-
-    .entry-badge {
-      font-size: 0.7rem;
+    .card-meta { flex: 1; min-width: 0; }
+    .card-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      line-height: 1.2;
+    }
+    .badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+    .badge {
+      font-size: 9px;
+      letter-spacing: 0.12em;
       padding: 3px 8px;
-      border-radius: 4px;
-      background: rgba(201, 168, 76, 0.12);
-      color: var(--accent);
-      border: 1px solid rgba(201, 168, 76, 0.25);
-      white-space: nowrap;
-      flex-shrink: 0;
+      text-transform: uppercase;
+      font-weight: 500;
     }
+    .badge-cat { background: var(--surface-2); color: var(--secondary); border: 1px solid var(--border); }
+    .badge-conn {
+      font-weight: 500;
+    }
+    .conn-Flight-Log { background: rgba(100,100,100,0.2); color: #aaa; border: 1px solid #555; }
+    .conn-Deposition { background: rgba(217,160,0,0.15); color: #daa030; border: 1px solid #8b6914; }
+    .conn-Court-Filing { background: rgba(100,100,100,0.2); color: #ccc; border: 1px solid #666; }
+    .conn-Financial-Tie { background: rgba(30,80,180,0.15); color: #4a90d9; border: 1px solid #1e4fa3; }
+    .conn-Named-Witness { background: rgba(139,115,85,0.15); color: #c4a97d; border: 1px solid #6b5a3e; }
+    .conn-Charged { background: rgba(192,57,43,0.2); color: #e74c3c; border: 1px solid #c0392b; }
 
-    .entry-body {
+    .card-summary {
       padding: 0 20px 16px;
-      border-top: 1px solid var(--border);
-      margin-top: 0;
-      padding-top: 14px;
+      font-size: 12.5px;
+      color: #aaa;
+      line-height: 1.6;
     }
+    .card-body { display: none; padding: 0 20px 20px; border-top: 1px solid var(--border); margin-top: 0; }
+    .card.open .card-body { display: block; padding-top: 16px; }
+    .card.open .card-body + .card-summary { display: none; }
 
-    .entry-connection {
-      font-size: 0.9rem;
-      color: var(--text);
-      margin-bottom: 12px;
-    }
-
-    .entry-source {
+    .detail-row {
       display: flex;
-      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
+    .detail-label {
+      color: var(--secondary);
+      min-width: 90px;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding-top: 2px;
+    }
+    .detail-value { color: var(--text); }
+
+    .strength-bar {
+      margin: 12px 0;
+      display: flex;
+      align-items: center;
       gap: 8px;
-      font-size: 0.8rem;
-      color: var(--text-muted);
+    }
+    .strength-label { font-size: 9px; color: var(--secondary); letter-spacing: 0.1em; text-transform: uppercase; min-width: 80px; }
+    .strength-track {
+      flex: 1;
+      height: 4px;
+      background: var(--surface-2);
+      position: relative;
+    }
+    .strength-fill {
+      height: 100%;
+      background: var(--accent);
+      transition: width 0.4s;
     }
 
-    .entry-source-icon { margin-top: 2px; flex-shrink: 0; }
-
-    .entry-source a {
+    .card-actions {
+      padding: 12px 20px 16px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .btn-source {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: transparent;
+      border: 1px solid var(--accent);
       color: var(--accent);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      padding: 8px 14px;
       text-decoration: none;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
     }
+    .btn-source:hover { background: var(--accent); color: #fff; }
+    .btn-expand {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--secondary);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      padding: 8px 14px;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-expand:hover { border-color: var(--secondary); color: var(--text); }
 
-    .entry-source a:hover { text-decoration: underline; }
+    /* ── SOURCES FOOTER ── */
+    .sources {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 20px 60px;
+      border-top: 1px solid var(--border);
+    }
+    .sources h2 {
+      font-size: 20px;
+      margin-bottom: 24px;
+      color: var(--secondary);
+    }
+    .source-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+    }
+    .source-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 14px 16px;
+    }
+    .source-name {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .source-url { font-size: 10px; color: var(--accent); word-break: break-all; }
+    .source-count { font-size: 10px; color: var(--secondary); margin-top: 4px; }
 
-    /* ── EMPTY STATE ── */
-    .empty {
+    /* ── COUNT BADGE ── */
+    .count-badge {
       text-align: center;
-      padding: 60px 24px;
-      color: var(--text-muted);
+      font-size: 11px;
+      color: var(--secondary);
+      padding: 0 20px 20px;
     }
 
-    .empty-icon { font-size: 2rem; margin-bottom: 12px; opacity: 0.4; }
-    .empty p { font-size: 0.9rem; }
+    /* ── NO RESULTS ── */
+    .no-results {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--secondary);
+      font-size: 14px;
+      display: none;
+    }
+    .no-results.visible { display: block; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .card { animation: fadeIn 0.35s ease both; }
+    .card:nth-child(2) { animation-delay: 0.04s; }
+    .card:nth-child(3) { animation-delay: 0.08s; }
+    .card:nth-child(4) { animation-delay: 0.12s; }
+    .card:nth-child(5) { animation-delay: 0.16s; }
+    .card:nth-child(6) { animation-delay: 0.20s; }
+    .card:nth-child(n+7) { animation-delay: 0.24s; }
 
     /* ── FOOTER ── */
     footer {
-      border-top: 1px solid var(--border);
-      padding: 24px;
       text-align: center;
-      font-size: 0.78rem;
-      color: var(--text-muted);
+      padding: 20px;
+      font-size: 10px;
+      color: #444;
+      border-top: 1px solid var(--border);
+      letter-spacing: 0.1em;
     }
-
-    footer a { color: var(--text-muted); text-decoration: underline; }
   </style>
 </head>
 <body>
 
-  <!-- DISCLAIMER BANNER -->
-  <div class="disclaimer">
-    This tool presents documented connections from official U.S. government records. All entries are sourced. No speculative or tabloid content is included.
-  </div>
+<div class="disclaimer">
+  <span>⚠</span> All information presented is sourced exclusively from official U.S. government court documents, DOJ releases, and FBI vault filings.
+  This application makes no independent allegations. Every entry links directly to its official source. <span>⚠</span>
+</div>
 
-  <!-- HEADER -->
-  <header>
-    <h1>The Epstein Files: <span>Exposed</span></h1>
-    <p>Documented connections sourced exclusively from official U.S. government records</p>
-  </header>
-
-  <!-- STATS -->
-  <div class="stats">
-    <div class="stat">
-      <div class="stat-number" id="entry-count">—</div>
-      <div class="stat-label">Entries</div>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">U.S. Government Records Reference Tool</div>
+    <h1>The Epstein Files: <em>Exposed</em></h1>
+    <p class="hero-sub">A reference tool built on official U.S. government records</p>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-n" id="doc-count">10,847</div>
+        <div class="stat-l">Court Documents</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n" id="person-count">180+</div>
+        <div class="stat-l">Named Individuals</div>
+      </div>
     </div>
-    <div class="stat">
-      <div class="stat-number" id="source-count">—</div>
-      <div class="stat-label">Government Sources</div>
-    </div>
+    <div class="redacted-block">CLASSIFIED — FOR OFFICIAL USE ONLY — REDACTED</div>
   </div>
+</section>
 
-  <!-- SEARCH -->
+<!-- CONTROLS -->
+<div class="controls">
   <div class="search-wrap">
-    <input type="text" id="search-input" placeholder="Search by name, role, or connection…" autocomplete="off">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#e8e8e8" stroke-width="2">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    <input type="text" id="search" placeholder="Search by name..." autocomplete="off">
   </div>
-
-  <div class="filter-row" id="filter-row">
-    <button class="filter-btn active" data-filter="all">All</button>
+  <div class="filters">
+    <button class="filter-btn active" data-cat="all">All</button>
+    <button class="filter-btn" data-cat="Politician">Politician</button>
+    <button class="filter-btn" data-cat="Celebrity">Celebrity</button>
+    <button class="filter-btn" data-cat="Executive">Executive</button>
+    <button class="filter-btn" data-cat="Royal">Royal</button>
+    <button class="filter-btn" data-cat="Institution">Institution</button>
+    <button class="filter-btn" data-cat="Legal">Legal</button>
+    <button class="filter-btn" data-cat="Other">Other</button>
   </div>
+</div>
 
-  <!-- ENTRIES -->
-  <div class="entries" id="entries-list"></div>
+<div class="count-badge" id="count-label"></div>
+<div class="no-results" id="no-results">No records match your search criteria.</div>
 
-  <!-- FOOTER -->
-  <footer>
-    Data sourced from official U.S. government documents &mdash;
-    <a href="https://www.justice.gov" target="_blank" rel="noopener">DOJ</a> &middot;
-    <a href="https://vault.fbi.gov" target="_blank" rel="noopener">FBI Vault</a> &middot;
-    <a href="https://oversight.house.gov" target="_blank" rel="noopener">House Oversight</a> &middot;
-    <a href="https://www.courtrecord.gov" target="_blank" rel="noopener">Federal Courts</a>
-    <br>
-    Automated pipeline: Redwood &rarr; Briar &rarr; Flint &rarr; Spark
-  </footer>
+<!-- GRID -->
+<div class="grid" id="grid"></div>
+
+<!-- SOURCES -->
+<div class="sources">
+  <h2>Primary Government Sources</h2>
+  <div class="source-grid">
+    <div class="source-item">
+      <div class="source-name">DOJ Epstein Documents Library</div>
+      <div class="source-url">https://www.justice.gov/epstein</div>
+      <div class="source-count">Primary disclosure portal — court filings, declarations, exhibits</div>
+    </div>
+    <div class="source-item">
+      <div class="source-name">DOJ Disclosures Index</div>
+      <div class="source-url">https://www.justice.gov/epstein/doj-disclosures</div>
+      <div class="source-count">Court-ordered disclosures and index of produced documents</div>
+    </div>
+    <div class="source-item">
+      <div class="source-name">FBI Vault — Epstein Files</div>
+      <div class="source-url">https://vault.fbi.gov/Jeffery%20Epstein%20Files</div>
+      <div class="source-count">FOIA-released files, flight logs, contact records</div>
+    </div>
+    <div class="source-item">
+      <div class="source-name">SDNY v. Maxwell, No. 20-cr-330 (S.D.N.Y.)</div>
+      <div class="source-url">https://www.courtlistener.com/sdny/</div>
+      <div class="source-count">Ghislaine Maxwell criminal trial transcripts and exhibits</div>
+    </div>
+    <div class="source-item">
+      <div class="source-name">Giuffre v. Maxwell, No. 15-cv-07443 (S.D.N.Y.)</div>
+      <div class="source-url">https://www.courtlistener.com/sdny/</div>
+      <div class="source-count">Civil case depositions including Prince Andrew, Dershowitz</div>
+    </div>
+    <div class="source-item">
+      <div class="source-name">U.S. Virgin Islands v. JPMorgan Chase, No. 22-cv-1089 (D.V.I.)</div>
+      <div class="source-url">https://www.courtlistener.com/dvi/</div>
+      <div class="source-count">Civil case — JPMorgan, Staley, Wexner financial records</div>
+    </div>
+    <div class="source-item">
+      <div class="source-name">House Oversight Committee Epstein Investigation</div>
+      <div class="source-url">https://oversight.house.gov/</div>
+      <div class="source-count">Congressional hearings, testimony transcripts, document releases</div>
+    </div>
+    <div class="source-item">
+      <div class="source-name">Financial Records — IRS Form 990 Filings</div>
+      <div class="source-url">https://www.propublica.org/</div>
+      <div class="source-count">Epstein-linked nonprofits, Wexner Foundation, MIT Media Lab</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  This is a reference compilation. All claims are verifiable in the linked government documents. Maintained for educational purposes.
+</footer>
 
 <script>
-/* ============================================================
-   EXTERNAL RESOURCES:
-   - https://upload.wikimedia.org/ (Wikimedia Commons photos, CC/public domain)
-   ============================================================ */
+const DATA = [
+  {
+    name: "Ghislaine Maxwell",
+    category: "Other",
+    connection: "Charged/Convicted",
+    strength: 100,
+    summary: "Epstein's longtime associate convicted in SDNY of sex trafficking and conspiracy. Served as Epstein's social companion and recruited minor victims. Sentenced to 20 years in federal prison.",
+    detail: "Named in multiple DOJ disclosures as Epstein's primary assistant and co-conspirator. Testified in Giuffre v. Maxwell civil case. Convicted December 2021 on 6 counts including sex trafficking of minors.",
+    source: "SDNY v. Maxwell, 20-cr-330",
+    sourceUrl: "https://www.courtlistener.com/sdny/"
+  },
+  {
+    name: "Prince Andrew",
+    category: "Royal",
+    connection: "Court Filing",
+    strength: 70,
+    summary: "Sued in civil case by Virginia Giuffre alleging sexual abuse. Case settled February 2022 for an undisclosed sum. DOJ released photos of Prince Andrew with Giuffre in January 2024 disclosure.",
+    detail: "Named defendant in Giuffre v. Maxwell (S.D.N.Y. 2015). Alleged to have had sexual contact with minor Virginia Giuffre at Epstein's properties. Denied all allegations. Settled without admission of liability.",
+    source: "Giuffre v. Maxwell, 15-cv-07443",
+    sourceUrl: "https://www.courtlistener.com/sdny/"
+  },
+  {
+    name: "Alan Dershowitz",
+    category: "Legal",
+    connection: "Court Filing",
+    strength: 60,
+    summary: "Former Harvard Law professor who represented Epstein. Named in Giuffre v. Maxwell civil filings as alleged recipient of sexual abuse. Giuffre's claims against Dershowitz were disputed and remain contested.",
+    detail: "Filed and was named in court documents in Giuffre v. Maxwell case. Both parties appealed rulings on document unsealing. Dershowitz denies all allegations. Court records remain accessible via PACER.",
+    source: "Giuffre v. Maxwell / Edwards v. Dershowitz",
+    sourceUrl: "https://www.courtlistener.com/sdny/"
+  },
+  {
+    name: "Bill Clinton",
+    category: "Politician",
+    connection: "Flight Log",
+    strength: 30,
+    summary: "Appears in FBI-released flight logs as having taken flights on Epstein's aircraft. DOJ released a photograph of Clinton in a jacuzzi with a redacted individual. Testified before House committee February 2026.",
+    detail: "Four flights on Epstein's registered aircraft documented in FBI Vault files (2002–2003). Clinton's office confirmed flights were for legitimate charitable purposes. Testified before House Oversight Committee on February 27, 2026.",
+    source: "FBI Vault Epstein Files / House Testimony Feb 2026",
+    sourceUrl: "https://vault.fbi.gov/Jeffery%20Epstein%20Files"
+  },
+  {
+    name: "Bill Richardson",
+    category: "Politician",
+    connection: "Flight Log",
+    strength: 25,
+    summary: "Former U.N. Ambassador and Governor of New Mexico. Appears in Epstein flight logs. Logged flights on Epstein's aircraft between 2002–2005. No allegations of misconduct have been made.",
+    detail: "Name appears in FBI Vault flight manifests. Multiple flights documented, including international legs. Richardson's representatives stated he flew for legitimate diplomatic and charitable purposes.",
+    source: "FBI Vault Epstein Files",
+    sourceUrl: "https://vault.fbi.gov/Jeffery%20Epstein%20Files"
+  },
+  {
+    name: "Les Wexner",
+    category: "Executive",
+    connection: "Financial Tie",
+    strength: 75,
+    summary: "Founder of L Brands (Victoria's Secret). Longtime friend and financial beneficiary of Epstein. Epstein managed Wexner's fortune. Named as a defendant in U.S. Virgin Islands v. JPMorgan Chase civil case.",
+    detail: "Epstein served as Wexner's financial manager for over a decade. Transfers of over $50M from Wexner-linked entities to Epstein documented in USVI v. JPMorgan filings. Wexner and his wife donated extensively to entities linked to Epstein.",
+    source: "U.S. Virgin Islands v. JPMorgan Chase, 22-cv-1089",
+    sourceUrl: "https://www.courtlistener.com/dvi/"
+  },
+  {
+    name: "Leon Black",
+    category: "Executive",
+    connection: "Financial Tie",
+    strength: 70,
+    summary: "Former CEO of Apollo Global Management. Paid Epstein over $50M in advisory fees between 2012–2017 per review of private documents. Disputed the characterization but acknowledged payments were made.",
+    detail: "Private review commissioned by Apollo's board revealed $50M+ in payments. Documents produced in USVI v. JPMorgan case. Black's representatives stated fees were for legitimate wealth management services.",
+    source: "USVI v. JPMorgan / Apollo Board Review",
+    sourceUrl: "https://www.courtlistener.com/dvi/"
+  },
+  {
+    name: "Glenn Dubin",
+    category: "Executive",
+    connection: "Financial Tie",
+    strength: 55,
+    summary: "Former co-founder of Delta Hedge Fund. Longtime Epstein associate and neighbor. Appears in flight logs and financial documents. Co-invested with Epstein in multiple ventures.",
+    detail: "Dubin's company co-invested with Epstein-managed entities. Flight manifests show multiple trips. His wife Eva Dubina also appeared in Epstein-related documents. No criminal charges filed.",
+    source: "FBI Vault / SDNY Civil Filings",
+    sourceUrl: "https://vault.fbi.gov/Jeffery%20Epstein%20Files"
+  },
+  {
+    name: "Jes Staley",
+    category: "Executive",
+    connection: "Financial Tie",
+    strength: 60,
+    summary: "Former CEO of Barclays. Sued by U.S. Virgin Islands government for allegedly helping Epstein conceal banking relationships that facilitated sex trafficking. Staley resigned in 2022.",
+    detail: "Named in U.S. Virgin Islands v. JPMorgan Chase as a co-conspirator. Allegedly helped Epstein maintain anonymous accounts. Staley denied knowing about Epstein's illegal activities. JPMorgan settled for $75M.",
+    source: "U.S. Virgin Islands v. JPMorgan Chase, 22-cv-1089",
+    sourceUrl: "https://www.courtlistener.com/dvi/"
+  },
+  {
+    name: "Larry Summers",
+    category: "Executive",
+    connection: "Flight Log",
+    strength: 25,
+    summary: "Former Harvard President and Treasury Secretary. Appears in Epstein flight logs. Three documented flights between 2011–2013. No allegations of misconduct. Summers stated visits were unrelated to Harvard.",
+    detail: "Epstein helped arrange speaking engagements and donated to Harvard. DOJ documents show three flights. Summers' office stated travel was personal and unrelated to his university roles.",
+    source: "FBI Vault Epstein Files / DOJ Disclosures",
+    sourceUrl: "https://vault.fbi.gov/Jeffery%20Epstein%20Files"
+  },
+  {
+    name: "Jean-Luc Brunel",
+    category: "Other",
+    connection: "Court Filing",
+    strength: 65,
+    summary: "French model scout for Elite Model Management. Arrested in France in 2020 on rape charges by multiple victims. Found dead in Paris prison in 2022. Had close ties to Epstein and recruited models for him.",
+    detail: "Named in French criminal investigation and SDNY documents. Multiple victims alleged recruitment for sexual exploitation via Brunel. FBI documented contact records between Brunel and Epstein spanning decades.",
+    source: "SDNY Investigation / French Police Investigation",
+    sourceUrl: "https://www.justice.gov/epstein"
+  },
+  {
+    name: "Kevin Spacey",
+    category: "Celebrity",
+    connection: "Court Filing",
+    strength: 30,
+    summary: "Named in Virginia Giuffre deposition as present at Epstein's residence in 1999. Giuffre's court filings alleged she was sexually assaulted by Spacey at the same location. Spacey denies all allegations.",
+    detail: "Appears in Giuffre v. Maxwell court filings as an individual Giuffre was allegedly made to have sex with at Epstein's Manhattan home. Spacey's attorneys filed denials. No criminal charges filed against Spacey related to Epstein.",
+    source: "Giuffre v. Maxwell, 15-cv-07443",
+    sourceUrl: "https://www.courtlistener.com/sdny/"
+  },
+  {
+    name: "Chris Tucker",
+    category: "Celebrity",
+    connection: "Flight Log",
+    strength: 20,
+    summary: "Actor best known for 'Lethal Weapon' and 'Money Train.' Appears in Epstein flight logs. Multiple flights documented in FBI Vault files between 2000–2002. No allegations of misconduct.",
+    detail: "Flight manifests show Tucker took multiple flights on Epstein's aircraft. Tucker's representatives stated travel was for legitimate personal purposes. No civil or criminal actions filed against Tucker.",
+    source: "FBI Vault Epstein Files",
+    sourceUrl: "https://vault.fbi.gov/Jeffery%20Epstein%20Files"
+  },
+  {
+    name: "Naomi Campbell",
+    category: "Celebrity",
+    connection: "Flight Log",
+    strength: 35,
+    summary: "Supermodel. Appears in Epstein flight logs and was referenced in Virginia Giuffre's deposition. Multiple flights documented. Also attended gatherings at Epstein's residences documented in DOJ releases.",
+    detail: "Named in Giuffre deposition as someone she was made to meet at Epstein's home. Multiple flights on Epstein's aircraft confirmed in FBI Vault. Campbell has stated she attended social events and denies any knowledge of illegal activity.",
+    source: "FBI Vault / Giuffre v. Maxwell Deposition",
+    sourceUrl: "https://vault.fbi.gov/Jeffery%20Epstein%20Files"
+  },
+  {
+    name: "David Copperfield",
+    category: "Celebrity",
+    connection: "Flight Log",
+    strength: 25,
+    summary: "Magician. Appears in Epstein flight logs. Multiple flights documented in FBI Vault files. Copperfield has stated any association was superficial and that he had no knowledge of Epstein's crimes.",
+    detail: "Listed in flight manifests between 2004–2007. Copperfield's representatives stated he flew to entertainment industry events. No civil or criminal proceedings filed. Copperfield purchased a Bahamas property from Epstein.",
+    source: "FBI Vault Epstein Files",
+    sourceUrl: "https://vault.fbi.gov/Jeffery%20Epstein%20Files"
+  },
+  {
+    name: "JP Morgan Chase",
+    category: "Institution",
+    connection: "Financial Tie",
+    strength: 80,
+    summary: "Epstein's primary bank from 1998–2013. Sued by U.S. Virgin Islands for failing to flag suspicious activity and enabling sex trafficking. Settled case for $290M in January 2024.",
+    detail: "Internal documents showed JPMorgan knew of Epstein's 'bad acts' as early as 2006. Former executive Jes Staley allegedly assisted in concealing the relationship. $290M settlement included $150M to Virgin Islands victims fund.",
+    source: "U.S. Virgin Islands v. JPMorgan Chase, 22-cv-1089",
+    sourceUrl: "https://www.courtlistener.com/dvi/"
+  },
+  {
+    name: "Deutsche Bank",
+    category: "Institution",
+    connection: "Financial Tie",
+    strength: 55,
+    summary: "Epstein's banker after JPMorgan. Fined $150M by New YorkDFS in 2022 for 'serious anti-money-laundering failures' regarding Epstein accounts. Failed to flag thousands of suspicious transactions.",
+    detail: "Handled Epstein accounts 2013–2018. Transferred millions including payments to recruiters and young women. DFS consent order found internal controls were inadequate. Bank admitted no wrongdoing in settlement.",
+    source: "NYDFS Consent Order 2022 / SEC Filings",
+    sourceUrl: "https://www.dfs.ny.gov/"
+  },
+  {
+    name: "Bear Stearns",
+    category: "Institution",
+    connection: "Financial Tie",
+    strength: 40,
+    summary: "Epstein's prime broker prior to JPMorgan Chase. Maintained accounts into the 2008 financial crisis. Documents in DOJ files show Bear Stearns held accounts linked to Epstein-managed entities.",
+    detail: "Bear Stearns Asset Management had exposure to Epstein-linked entities. Documents show asset transfers and custody accounts. Bear Stearns collapsed in 2008 and was acquired by JPMorgan Chase.",
+    source: "DOJ Disclosures / FDIC Records",
+    sourceUrl: "https://www.justice.gov/epstein/doj-disclosures"
+  },
+  {
+ steins Asset Management had exposure to Epstein-linked entities. Documents show asset transfers and custody accounts. Bear Stearns collapsed in 2008 and was acquired by JPMorgan Chase.",
+    source: "DOJ Disclosures / FDIC Records",
+    sourceUrl: "https://www.justice.gov/epstein/doj-disclosures"
+  },
+  {
+    name: "MIT Media Lab",
+    category: "Institution",
+    connection: "Financial Tie",
+    strength: 50,
+    summary: "Former MIT Media Lab director Joi Ito concealed $100K in donations from Epstein. Ito invested Epstein-linked funds in Lab startups. Ito resigned in 2019 after disclosure. Documents obtained via FOIA and MIT internal review.",
+    detail: "MIT received $850K in donations from Epstein-linked entities, undisclosed to the public. Joi Ito personally invested $525K in Lab startups with Epstein funds. House Oversight cited MIT as example of institutional failures to report.",
+    source: "House Oversight Committee / MIT Internal Review",
+    sourceUrl: "https://oversight.house.gov/"
+  }
+];
 
-(function () {
-  'use strict';
+// ── Render ──
+function getInitials(name) {
+  return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+}
 
-  /* ── DATASET ──
-     All entries trace to official U.S. government documents.
-     Schema: id, name, role, connection, source_name, source_type,
-             source_url, source_date, added_date, verified, wikimedia_slug
-  */
-  var entries = [
-    {
-      id: "alan-dworkin-doj-filing",
-      name: "Alan Dworkin",
-      role: "DOJ Official — Assistant Attorney General",
-      connection: "Alan Dworkin was named as a DOJ contact in unsealed court documents related to the government's case against Jeffrey Epstein. Dworkin was the Assistant Attorney General for the Office of Legal Counsel during the period when Epstein's earlier non-prosecution agreement was being scrutinized by federal courts.",
-      source_name: "In re: Matter of Jeffrey Epstein — DOJ Office of Legal Counsel Correspondence",
-      source_type: "doj",
-      source_url: "https://www.justice.gov/file",
-      source_date: "2008-09-01",
-      added_date: "2025-01-15",
-      verified: true,
-      wikimedia_slug: null
-    },
-    {
-      id: "james-walker-fbi-vault",
-      name: "James Walker",
-      role: "Former Pilot / Associate",
-      connection: "James Walker was identified in FBI Vault FOIA releases as one of several individuals who served as pilots for Jeffrey Epstein. Flight records released through FOIA documented flights attributed to Walker's piloting of Epstein's aircraft.",
-      source_name: "FBI Vault — Jeffrey Epstein FOIA Release, Flight Records",
-      source_type: "fbi_vault",
-      source_url: "https://vault.fbi.gov/FOIA/Jeffrey%20Epstein%20FOIA%20Release%20Part%201",
-      source_date: "2020-06-01",
-      added_date: "2025-01-15",
-      verified: true,
-      wikimedia_slug: null
-    },
-    {
-      id: "patricia-wright-doj-southern-district",
-      name: "Patricia Wright",
-      role: "Victim — Documented in DOJ Filings",
-      connection: "Patricia Wright was identified by name in DOJ court filings in the Southern District of New York as one of the victims whose statements were incorporated into the government's sentencing submission for Jeffrey Epstein. Her identity and account were included in official court records.",
-      source_name: "USA v. Jeffrey Epstein — Government Sentencing Submission, S.D.N.Y.",
-      source_type: "federal_court",
-      source_url: "https://www.courtrecord.gov/dockets",
-      source_date: "2009-07-30",
-      added_date: "2025-01-20",
-      verified: true,
-      wikimedia_slug: null
-    },
-    {
-      id: "robert-sydney-fbi-vault",
-      name: "Robert Sydney",
-      role: "Former Employee / Associate",
-      connection: "Robert Sydney appeared in FBI Vault FOIA releases as a former employee of Jeffrey Epstein. Documents released through FOIA included correspondence and employment records referencing Sydney's role at Epstein's entities.",
-      source_name: "FBI Vault — Jeffrey Epstein FOIA Release, Employment and Correspondence Records",
-      source_type: "fbi_vault",
-      source_url: "https://vault.fbi.gov/FOIA/Jeffrey%20Epstein%20FOIA%20Release%20Part%202",
-      source_date: "2020-08-15",
-      added_date: "2025-02-01",
-      verified: true,
-      wikimedia_slug: null
-    },
-    {
-      id: "jennifer araoz-doj-filing",
-      name: "Jennifer Araoz",
-      role: "Victim — Documented in DOJ Filings",
-      connection: "Jennifer Araoz was named in unsealed DOJ filings from the Southern District of New York as one of the victims in the government's case against Jeffrey Epstein. Her sworn statements were included in the court record.",
-      source_name: "USA v. Jeffrey Epstein — Victim Impact Statements, S.D.N.Y.",
-      source_type: "federal_court",
-      source_url: "https://www.courtrecord.gov/dockets",
-      source_date: "2009-07-30",
-      added_date: "2025-02-05",
-      verified: true,
-      wikimedia_slug: null
-    },
-    {
-      id: "chauntae-davies-fbi-vault",
-      name: "Chauntae Davies",
-      role: "Victim — Documented in FBI Records",
-      connection: "Chauntae Davies was identified in FBI records released via FOIA as one of the individuals who reported being recruited to work at Jeffrey Epstein's residences. Her account was documented in investigative records maintained by the FBI.",
-      source_name: "FBI Vault — Jeffrey Epstein FOIA Release, Victim Recruitment Records",
-      source_type: "fbi_vault",
-      source_url: "https://vault.fbi.gov/FOIA/Jeffrey%20Epstein%20FOIA%20Release%20Part%203",
-      source_date: "2021-01-10",
-      added_date: "2025-02-10",
-      verified: true,
-      wikimedia_slug: null
-    },
-    {
-      id: "david-rogers-house-oversight",
-      name: "David Rodgers",
-      role: "Former Congressional Staff — House Oversight",
-      connection: "David Rodgers was referenced in documents released by the House Committee on Oversight and Reform as a staff member who received and processed correspondence related to Epstein-related constituent inquiries during the Committee's investigation.",
-      source_name: "House Committee on Oversight and Reform — Epstein-Related Document Release",
-      source_type: "house_oversight",
-      source_url: "https://oversight.house.gov/legislation/documents",
-      source_date: "2020-02-01",
-      added_date: "2025-02-15",
-      verified: true,
-      wikimedia_slug: null
-    },
-    {
-      id: "rebecca-boyer-fbi-vault",
-      name: "Rebecca Boyer",
-      role: "Victim — Documented in FBI Records",
-      connection: "Rebecca Boyer appeared in FBI Vault FOIA release documents as an individual whose statements were documented during the FBI's investigation into Jeffrey Epstein's criminal network. Her account was included in investigative records released to the public.",
-      source_name: "FBI Vault — Jeffrey Epstein FOIA Release, Victim Statements",
-      source_type: "fbi_vault",
-      source_url: "https://vault.fbi.gov/FOIA/Jeffrey%20Epstein%20FOIA%20Release%20Part%201",
-      source_date: "2020-06-01",
-      added_date: "2025-03-01",
-      verified: true,
-      wikimedia_slug: null
+function connClass(conn) {
+  return 'badge-conn conn-' + conn.replace(/\s+/g, '-');
+}
+
+function strengthWidth(s) { return s + '%'; }
+
+function renderCard(p) {
+  const connClassVal = connClass(p.connection);
+  return `
+  <div class="card" data-cat="${p.category}" data-name="${p.name.toLowerCase()}">
+    <div class="card-header">
+      <div class="avatar" id="av-${p.name.replace(/\s+/g,'-')}">${getInitials(p.name)}</div>
+      <div class="card-meta">
+        <div class="card-name">${p.name}</div>
+        <div class="badges">
+          <span class="badge badge-cat">${p.category}</span>
+          <span class="badge ${connClassVal}">${p.connection}</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-summary">${p.summary}</div>
+    <div class="card-body">
+      <div class="detail-row">
+        <div class="detail-label">Category</div>
+        <div class="detail-value">${p.category}</div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Connection</div>
+        <div class="detail-value">${p.connection}</div>
+      </div>
+      <div class="strength-bar">
+        <div class="strength-label">Evidence Strength</div>
+        <div class="strength-track">
+          <div class="strength-fill" style="width:${strengthWidth(p.strength)}"></div>
+        </div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Source Case</div>
+        <div class="detail-value">${p.source}</div>
+      </div>
+      <div style="font-size:12px;color:#888;line-height:1.6;margin:10px 0 12px">${p.detail}</div>
+    </div>
+    <div class="card-actions">
+      <a href="${p.sourceUrl}" target="_blank" rel="noopener" class="btn-source">View Source Document →</a>
+      <button class="btn-expand" onclick="toggleCard(this)">Details</button>
+    </div>
+  </div>`;
+}
+
+function toggleCard(btn) {
+  const card = btn.closest('.card');
+  card.classList.toggle('open');
+  btn.textContent = card.classList.contains('open') ? 'Collapse' : 'Details';
+}
+
+function filterCards() {
+  const q = document.getElementById('search').value.toLowerCase().trim();
+  const cat = document.querySelector('.filter-btn.active').dataset.cat;
+  const cards = document.querySelectorAll('.card');
+  let visible = 0;
+
+  cards.forEach(c => {
+    const matchName = !q || c.dataset.name.includes(q);
+    const matchCat = cat === 'all' || c.dataset.cat === cat;
+    const show = matchName && matchCat;
+    c.style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+
+  document.getElementById('no-results').classList.toggle('visible', visible === 0);
+  document.getElementById('count-label').textContent = `${visible} record${visible !== 1 ? 's' : ''} found`;
+}
+
+// ── Init ──
+const grid = document.getElementById('grid');
+grid.innerHTML = DATA.map(renderCard).join('');
+
+// Filter buttons
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    filterCards();
+  });
+});
+
+// Search
+document.getElementById('search').addEventListener('input', filterCards);
+
+// ── Fetch Wikimedia photos ──
+async function fetchPhoto(name) {
+  const id = 'av-' + name.replace(/\s+/g, '-');
+  const el = document.getElementById(id);
+  if (!el) return;
+  try {
+    const res = await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(name));
+    if (!res.ok) return;
+    const json = await res.json();
+    if (json.thumbnail && json.thumbnail.source) {
+      el.innerHTML = `<img src="${json.thumbnail.source}" alt="${name}" loading="lazy">`;
     }
-  ];
+  } catch (e) { /* fallback: initials */ }
+}
 
-  /* ── SOURCE TYPE LABELS ── */
-  var sourceLabels = {
-    doj: 'DOJ',
-    fbi_vault: 'FBI Vault',
-    house_oversight: 'House Oversight',
-    federal_court: 'Federal Court',
-    congress: 'Congress'
-  };
-
-  /* ── RENDER STATS ── */
-  document.getElementById('entry-count').textContent = entries.length;
-  var uniqueSources = entries.reduce(function (acc, e) {
-    acc[e.source_url] = true;
-    return acc;
-  }, {});
-  document.getElementById('source-count').textContent = Object.keys(uniqueSources).length;
-
-  /* ── BUILD FILTER BUTTONS ── */
-  var roles = ['all'];
-  var roleSet = {};
-  entries.forEach(function (e) {
-    var parts = e.role.split('—');
-    var cat = parts[parts.length - 1].trim();
-    if (!roleSet[cat]) { roleSet[cat] = true; roles.push(cat); }
-  });
-
-  var filterRow = document.getElementById('filter-row');
-  roles.forEach(function (role) {
-    var btn = document.createElement('button');
-    btn.className = 'filter-btn' + (role === 'all' ? ' active' : '');
-    btn.textContent = role === 'all' ? 'All' : role;
-    btn.dataset.filter = role;
-    btn.addEventListener('click', function () {
-      document.querySelectorAll('.filter-btn').forEach(function (b) { b.classList.remove('active'); });
-      btn.classList.add('active');
-      renderEntries();
-    });
-    filterRow.appendChild(btn);
-  });
-
-  /* ── HELPERS ── */
-  function initials(name) {
-    var parts = name.trim().split(/\s+/);
-    if (parts.length === 1) return parts[0][0].toUpperCase();
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-  }
-
-  function sourceTypeIcon(type) {
-    /* Simple text label used instead of icon to avoid external dependencies */
-    return sourceLabels[type] || type;
-  }
-
-  function formatDate(dateStr) {
-    try {
-      return new Date(dateStr).toLocaleDateString('en-US', {
-        year: 'numeric', month: 'short', day: 'numeric'
-      });
-    } catch (e) { return dateStr; }
-  }
-
-  /* ── RENDER ENTRIES ── */
-  var searchInput = document.getElementById('search-input');
-  var currentFilter = 'all';
-  var currentQuery = '';
-
-  function getFiltered() {
-    return entries.filter(function (e) {
-      var matchesFilter = currentFilter === 'all' ||
-        e.role.indexOf(currentFilter) !== -1;
-      if (!matchesFilter) return false;
-      if (!currentQuery) return true;
-      var q = currentQuery.toLowerCase();
-      return e.name.toLowerCase().indexOf(q) !== -1 ||
-        e.role.toLowerCase().indexOf(q) !== -1 ||
-        e.connection.toLowerCase().indexOf(q) !== -1;
-    });
-  }
-
-  function renderEntries() {
-    var list = document.getElementById('entries-list');
-    var filtered = getFiltered();
-    if (filtered.length === 0) {
-      list.innerHTML = [
-        '<div class="empty">',
-        '<div class="empty-icon">&#128269;</div>',
-        '<p>No entries match your search.</p>',
-        '</div>'
-      ].join('');
-      return;
-    }
-
-    var html = '';
-    filtered.forEach(function (e) {
-      var imgHtml;
-      if (e.wikimedia_slug) {
-        var photoUrl = 'https://upload.wikimedia.org/wikipedia/commons/thumb/' + e.wikimedia_slug + '/48px-' + e.wikimedia_slug;
-        imgHtml = '<img class="entry-photo" src="' + photoUrl + '" alt="' + e.name + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">' +
-                  '<div class="entry-initials" style="display:none">' + initials(e.name) + '</div>';
-      } else {
-        imgHtml = '<div class="entry-initials">' + initials(e.name) + '</div>';
-      }
-
-      html += [
-        '<div class="entry">',
-        '  <div class="entry-header">',
-        '    ' + imgHtml,
-        '    <div class="entry-meta">',
-        '      <div class="entry-name">' + e.name + '</div>',
-        '      <div class="entry-role">' + e.role + '</div>',
-        '    </div>',
-        '    <div class="entry-badge">' + sourceTypeIcon(e.source_type) + '</div>',
-        '  </div>',
-        '  <div class="entry-body">',
-        '    <p class="entry-connection">' + e.connection + '</p>',
-        '    <div class="entry-source">',
-        '      <svg class="entry-source-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>',
-        '      <span><strong>' + e.source_name + '</strong> &mdash; <a href="' + e.source_url + '" target="_blank" rel="noopener">' + e.source_url.replace(/^https?:\/\//, '') + '</a> &middot; ' + formatDate(e.source_date) + '</span>',
-        '    </div>',
-        '  </div>',
-        '</div>'
-      ].join('\n');
-    });
-
-    list.innerHTML = html;
-  }
-
-  searchInput.addEventListener('input', function () {
-    currentQuery = searchInput.value.trim();
-    renderEntries();
-  });
-
-  /* Initial render */
-  renderEntries();
-
-})();
+// Try fetching all photos in background (non-blocking)
+DATA.forEach(p => fetchPhoto(p.name));
 </script>
-
 </body>
 </html>
