@@ -59,16 +59,15 @@ Every entry must conform to this schema:
 4. The `id` must be unique across the dataset.
 5. Entries are added to the `entries` array in `index.html`.
 
-## The Automated Pipeline
+## How Submissions Work
 
-Submissions go through the `epstein-monitor` pipeline:
+This is a manually curated dataset. There is no automated pipeline. Every PR is reviewed by a human contributor before merging.
 
-- **Redwood** — Monitors government source feeds weekly; detects new relevant documents
-- **Briar** — Extracts structured data and identifies named individuals from new documents
-- **Flint** — Verifies citations, validates source URLs, checks for duplicates, enforces schema
-- **Spark** — Opens a verified pull request against this repository
-
-Pipeline-generated PRs are pre-verified and include the full government source URL.
+To submit a new entry:
+1. Add a new object to the `DATA` array in `index.html`
+2. Follow the schema exactly (see above)
+3. Include a direct link to an official U.S. government document as the source
+4. Open a pull request
 
 ## Ground Rules
 

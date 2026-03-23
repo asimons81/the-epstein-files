@@ -28,9 +28,9 @@ Submit a pull request. The only hard requirement: a direct link to an official U
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the entry schema.
 
-## Automated Pipeline
+## Current Status
 
-`epstein-monitor` runs weekly. It monitors government source feeds (DOJ, FBI Vault, House Oversight, USCourts), evaluates new documents, and opens verified PRs with citations and source URLs.
+This is a static, manually curated reference tool. The dataset is small by design — every entry is reviewed before inclusion. There is no automated pipeline.
 
 ## License
 
