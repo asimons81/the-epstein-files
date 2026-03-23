@@ -519,13 +519,22 @@
     </div>
     <div class="source-item">
       <div class="source-name">House Oversight Committee Epstein Investigation</div>
-      <div class="source-url">https://oversight.house.gov/</div>
-      <div class="source-count">Congressional hearings, testimony transcripts, document releases</div>
+      <div class="source-url">https://oversight.house.gov/release/oversight-committee-releases-bill-and-hillary-clinton-deposition-videos/</div>
+      <div class="source-count">Press release confirming Bill Clinton deposition (Feb 27, 2026) and video release (Mar 2, 2026) as part of Committee's Epstein investigation.</div>
     </div>
     <div class="source-item">
       <div class="source-name">IRS Tax Exempt Organization Search</div>
-      <div class="source-url">https://apps.irs.gov/pub/irs-soi/eo_file.txt</div>
-      <div class="source-count">IRS Statistics of Income — exempt organization data for Epstein-linked nonprofits</div>
+      <div class="source-url">REMOVED — No specific, stable IRS URL tied to a supporting record. Generic IRS pages (search tools, publication indexes) do not support specific entity assertions without a direct document link.</div>
+      <div class="source-count">Requires a stable IRS.gov URL linking directly to the specific record.</div>
+    </div>
+  </div>
+
+  <h2 style="margin-top:32px;">Additional Sources</h2>
+  <div class="source-grid">
+    <div class="source-item">
+      <div class="source-name">NYDFS Consent Order — Deutsche Bank / Epstein (July 7, 2020)</div>
+      <div class="source-url">https://www.dfs.ny.gov/system/files/documents/2020/07/ea20200706_deutsche_bank_consent_order.pdf</div>
+      <div class="source-count">Direct consent order PDF — anti-money-laundering failures on Epstein accounts (2013–2018). Press release at: dfs.ny.gov/reports_and_publications/press_releases/pr202007071</div>
     </div>
   </div>
 </div>
@@ -533,6 +542,28 @@
 <footer>
   This is a reference compilation. All claims are verifiable in the linked government documents. Maintained for educational purposes.
 </footer>
+
+<!-- METHODOLOGY NOTE -->
+<div style="max-width:1100px;margin:0 auto;padding:0 20px 40px;">
+  <div style="background:#18181b;border:1px solid #27272a;padding:16px 20px;font-size:11px;color:#a1a1aa;line-height:1.7;font-family:'IBM Plex Mono',monospace;">
+    <strong>Verification Methodology</strong><br><br>
+    <strong>Three separate concepts:</strong><br>
+    <em>Link validity</em> — does the URL resolve? (HTTP status)<br>
+    <em>Source category validity</em> — is the source type correctly labeled and placed? (government / regulatory / secondary)<br>
+    <em>Claim-specific support</em> — does the content at this URL actually support the specific assertion made in this entry?<br><br>
+    <strong>Hard-stops applied in Phase 2:</strong> If a claim cannot be tied to a specific, defensible source and no replacement is available, the entry is flagged for revision or removal. Claim integrity beats keeping an entry alive.<br><br>
+    <strong>IRS (REMOVED):</strong> No specific, stable IRS.gov URL tied to a supporting record. Generic IRS pages do not support specific entity assertions without a direct document link.<br><br>
+    <strong>Oversight / Bill Clinton (URL CORRECTED):</strong> The Mar 2, 2026 Oversight release confirms that the deposition actually occurred on Feb 27, 2026 and that video was released. The old URL was the Feb 3 scheduling announcement — a different document. Corrected URL: oversight.house.gov/release/oversight-committee-releases-bill-and-hillary-clinton-deposition-videos/ — HTTP 200 verified.<br><br>
+    <strong>Deutsche Bank / NYDFS (FULLY RESTORED):</strong> Correct URL found. The press release is at dfs.ny.gov/reports_and_publications/press_releases/pr202007071 (HTTP 200, confirmed). The actual consent order PDF — which the press release links to directly — is at dfs.ny.gov/system/files/documents/2020/07/ea20200706_deutsche_bank_consent_order.pdf (HTTP 200, 640KB PDF). The old URL used /press/ instead of /press_releases/ — a structural path error that made it 404. Source label now matches the actual document. Entry fully restored with the consent order PDF as the primary source URL.<br><br>
+    <strong>Bear Stearns (CLAIM FINALIZED — ugly but honest):</strong> Final call: one more narrow. Removed all language implying confirmed Epstein accounts or documented Bear Stearns/Epstein entity ties. Final detail text: "Public filings in USVI v. JPMorgan document JPMorgan's relationship with Epstein, but no specific public filing has been confirmed here tying Bear Stearns directly to Epstein-managed entities." Strength reduced to 15. Entry retained as historical financial-entity context only — no specific supporting filing pinned.<br><br>
+    <strong>MIT Media Lab (RESTORED):</strong> MIT's own institutional records (MIT News, internal review) are primary sources — stronger than secondary journalism. Source label updated from "NYT Investigation" to "MIT Institutional Records / MIT News". MIT news URL: news.mit.edu/2019/mit-president-letter-regarding-joi-ito-and-jeffrey-epstein-0919.<br><br>
+    <strong>FBI Vault (NOT REMOVED):</strong> No specific sub-file URLs exist beyond the general directory. All 8 entries citing FBI Vault retain the directory URL (vault.fbi.gov/Jeffery%20Epstein%20Files). This is the correct standing until a specific file URL is publicly documented.<br><br>
+    <strong>Manual verification required / anti-bot protected:</strong> FBI Vault and CourtListener are functional, authoritative sources that block automated probing. They are not broken — they require manual browser verification. Claim-specific support remains unverified until opened in a browser.<br><br>
+    <strong>CourtListener:</strong> A public court-record access platform operated by Free Law Project (non-profit). Correctly labeled as court-records database / public court-record access — not an official government source.<br><br>
+    <strong>Direct HTTP verified:</strong> DOJ Epstein Documents Library (HTTP 200), DOJ Disclosures Index (HTTP 200), Oversight Committee press release (HTTP 200).<br><br>
+    <strong>Taxonomy:</strong> Primary Government Sources: official U.S. government sources (FBI Vault, DOJ, IRS, Oversight). CourtListener is in Primary Sources but correctly labeled court-records database. Additional Sources: regulatory (NYDFS/Deutsche Bank — removed URL), corroborating secondary (Reuters), investigative journalism (NYT/MIT). IRS and DFS remain removed pending specific URLs. MIT and Bear Stearns retained at reduced strength with corrected sourcing.
+  </div>
+</div>
 
 <script>
 const DATA = [
@@ -571,10 +602,10 @@ const DATA = [
     category: "Politician",
     connection: "Flight Log",
     strength: 30,
-    summary: "Appears in FBI-released flight logs as having taken flights on Epstein's aircraft. DOJ released a photograph of Clinton in a jacuzzi with a redacted individual. Testified before House committee February 2026.",
-    detail: "Four flights on Epstein's registered aircraft documented in FBI Vault files (2002–2003). Clinton's office confirmed flights were for legitimate charitable purposes. Testified before House Oversight Committee on February 27, 2026.",
-    source: "FBI Vault Epstein Files / House Testimony Feb 2026",
-    sourceUrl: "https://vault.fbi.gov/Jeffery%20Epstein%20Files"
+    summary: "Appears in FBI-released flight logs as having taken flights on Epstein's aircraft. DOJ released a photograph of Clinton in a jacuzzi with a redacted individual. Testified before House Oversight Committee on February 27, 2026.",
+    detail: "Four flights on Epstein's registered aircraft documented in FBI Vault files (2002–2003). Clinton's office confirmed flights were for legitimate charitable purposes. Testified before House Oversight Committee on February 27, 2026 — confirmed in Committee deposition-confirmation release (Mar 2, 2026). FBI Vault files require manual browser access.",
+    source: "FBI Vault Epstein Files / House Oversight Committee (Feb 27, 2026 deposition — confirmed Mar 2, 2026)",
+    sourceUrl: "https://oversight.house.gov/release/oversight-committee-releases-bill-and-hillary-clinton-deposition-videos/"
   },
   {
     name: "Bill Richardson",
@@ -701,30 +732,31 @@ const DATA = [
     category: "Institution",
     connection: "Financial Tie",
     strength: 55,
-    summary: "Epstein's banker after JPMorgan. Fined $150M by New YorkDFS in 2022 for 'serious anti-money-laundering failures' regarding Epstein accounts. Failed to flag thousands of suspicious transactions.",
-    detail: "Handled Epstein accounts 2013–2018. Transferred millions including payments to recruiters and young women. DFS consent order found internal controls were inadequate. Bank admitted no wrongdoing in settlement.",
-    source: "NYDFS Consent Order 2022 / SEC Filings",
-    sourceUrl: "https://www.dfs.ny.gov/"
+    summary: "Epstein's banker after JPMorgan Chase. Fined $150M by NYDFS in July 2020 for serious anti-money-laundering failures regarding Epstein accounts. Failed to flag thousands of suspicious transactions between 2013–2018.",
+    detail: "Handled Epstein accounts 2013–2018. Transferred millions including payments to recruiters and young women. NYDFS Consent Order (July 7, 2020) found internal controls were inadequate — including failure to monitor Epstein despite knowing his criminal history. Bank admitted no wrongdoing in settlement.",
+    source: "NYDFS Consent Order (July 7, 2020)",
+    sourceUrl: "https://www.dfs.ny.gov/system/files/documents/2020/07/ea20200706_deutsche_bank_consent_order.pdf"
   },
   {
     name: "Bear Stearns",
     category: "Institution",
     connection: "Financial Tie",
-    strength: 40,
-    summary: "Epstein's prime broker prior to JPMorgan Chase. Maintained accounts into the 2008 financial crisis. Documents in DOJ files show Bear Stearns held accounts linked to Epstein-managed entities.",
-    detail: "Bear Stearns Asset Management had exposure to Epstein-linked entities. Documents show asset transfers and custody accounts. Bear Stearns collapsed in 2008 and was acquired by JPMorgan Chase.",
-    source: "DOJ Disclosures / FDIC Records",
-    sourceUrl: "https://www.justice.gov/epstein/doj-disclosures"
+    strength: 15,
+    summary: "Bear Stearns served as Epstein's prime broker before its 2008 collapse. JPMorgan later acquired Bear Stearns.",
+    detail: "Bear Stearns served as Epstein's prime broker before its 2008 collapse. JPMorgan later acquired Bear Stearns. Public filings in USVI v. JPMorgan document JPMorgan's relationship with Epstein, but no specific public filing has been confirmed here tying Bear Stearns directly to Epstein-managed entities.",
+    source: "USVI v. JPMorgan Chase, 22-cv-1089 / public acquisition record",
+    sourceUrl: "https://www.courtlistener.com/dvi/22-cv-01089/"
   },
+
   {
     name: "MIT Media Lab",
     category: "Institution",
     connection: "Financial Tie",
-    strength: 50,
-    summary: "Former MIT Media Lab director Joi Ito concealed $100K in donations from Epstein. Ito invested Epstein-linked funds in Lab startups. Ito resigned in 2019 after disclosure. Documents obtained via FOIA and MIT internal review.",
-    detail: "MIT received $850K in donations from Epstein-linked entities, undisclosed to the public. Joi Ito personally invested $525K in Lab startups with Epstein funds. House Oversight cited MIT as example of institutional failures to report.",
-    source: "House Oversight Committee / MIT Internal Review",
-    sourceUrl: "https://oversight.house.gov/"
+    strength: 40,
+    summary: "Former MIT Media Lab director Joi Ito concealed $100K in donations from Epstein and invested Epstein-linked funds in Lab startups. Ito resigned in 2019 after The New York Times exposed the undisclosed relationship.",
+    detail: "MIT received $850K in donations from Epstein-linked entities, undisclosed to the public. Joi Ito personally invested $525K in Lab startups with Epstein funds. The donations were uncovered through investigative reporting by The New York Times and confirmed by MIT's own public acknowledgment and internal review.",
+    source: "MIT Institutional Records / MIT News / MIT Internal Review",
+    sourceUrl: "https://news.mit.edu/2019/mit-president-letter-regarding-joi-ito-and-jeffrey-epstein-0919"
   }
 ];
 
